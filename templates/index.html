@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>一梦江湖传音查看</title>
+    <script>
+function jumpToPage(page) {
+    page = page || parseInt(document.getElementById('pageInput').value);
+    if (!isNaN(page) && page > 0) {
+        var urlParams = new URLSearchParams(window.location.search);
+        window.location.href = '/jump_to_page?page=' + page ;
+        saveCurrentPage(page);
+        updatePageInput(page); // 更新页码输入框
+    } else {
+        alert('请输入有效的页码');
+    }
+}
+
+function saveCurrentPage(page) {
+    localStorage.setItem('currentPage', page);
+}
+
+function getCurrentPage() {
+    var urlParams = new URLSearchParams(window.location.search);
+    return parseInt(urlParams.get('page') || 1);
+}
+
+
+function nextPage() {
+    var currentPage = getCurrentPage();
+
+    var nextPage = currentPage + 1;
+    window.location.href = '/jump_to_page?page=' + nextPage;
+    saveCurrentPage(nextPage);
+    updatePageInput(nextPage); // 更新页码输入框
+}
+
+function previousPage() {
+    var currentPage = getCurrentPage();
+    var prevPage = currentPage - 1;
+    window.location.href = '/jump_to_page?page=' + prevPage;
+    saveCurrentPage(prevPage);
+    updatePageInput(prevPage); // 更新页码输入框
+}
+
+function updatePageInput(page) {
+    var pageInput = document.getElementById('pageInput');
+    pageInput.value = page.toString();
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    var currentPage = getCurrentPage();
+    var pageInput = document.getElementById('pageInput');
+    pageInput.value = currentPage; // 设置输入框的值
+
+    // 初始化页面时设置当前页码
+    var pageLinks = document.querySelectorAll('.pagination .gr-button');
+    pageLinks.forEach(function(link) {
+        if (link.textContent === '上一页') {
+            link.onclick = function(event) {
+                previousPage();
+            };
+        } else if (link.textContent === '下一页') {
+            link.onclick = function(event) {
+                nextPage();
+            };
+        }
+    });
+
+    // 更新按钮点击事件
+    var updateButton = document.querySelector('.gr-button:contains("获取最新消息")');
+    if (updateButton) {
+        updateButton.onclick = function() {
+            jumpToPage(1); // 传入参数 1
+        };
+    }
+
+    // 跳转按钮点击事件
+    var jumpButton = document.querySelector('.gr-button:contains("跳转")');
+    if (jumpButton) {
+        jumpButton.onclick = function() {
+            jumpToPage(); // 默认情况下从页码框获取页码
+        };
+    }
+});
+    </script>
+    <style>
+        /* 全局样式 */
+        body {
+            font-family: 'Open Sans', sans-serif;
+            background-color: #f5f8fa;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh; /* 确保 body 至少占据整个视口高度 */
+        }
+
+        /* 容器样式 */
+        .container {
+            max-width: 98%;
+            margin: 0 auto;
+            padding: 10px 5px;
+            padding-bottom: 0px;
+            flex-grow: 1; /* 让容器撑满剩余空间 */
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* 消息列表样式 */
+        .messages {
+            font-size: 16px;
+            line-height: 1.4;
+            padding: 5px;
+            width: 100%;
+            box-sizing: border-box;
+            flex-grow: 1; /* 让消息列表撑满容器剩余空间 */
+            overflow-y: auto;
+            background-color: white;
+            border: 1px solid #e1e8ed;
+            border-radius: 0;
+        }
+
+        /* 单条消息样式 */
+        .message {
+            border-bottom: 1px solid #e1e8ed;
+            padding: 10px 5px;
+        }
+
+        .message:last-child {
+            border-bottom: none;
+        }
+
+        .message-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 5px;
+        }
+
+        .message-author {
+            font-size: 16px;
+            font-weight: bold;
+            color: #0066cc;
+        }
+
+        .message-date-time {
+            font-size: 14px;
+            color: #657786;
+        }
+
+        .message-content {
+            font-size: 16px;
+            color: #14171a;
+            white-space: pre-wrap;
+        }
+
+        /* 按钮样式 */
+        .gr-button {
+            background-color: #1da1f2 !important;
+            color: white !important;
+            border: none !important;
+            border-radius: 4px !important;
+            padding: 8px 16px !important;
+            font-size: 16px !important;
+            cursor: pointer !important;
+            transition: background-color 0.3s ease !important;
+        }
+
+        .gr-button:hover {
+            background-color: #0c85d0 !important;
+        }
+
+        /* 分页样式 */
+        .pagination {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 10px; /* 保持一定的顶部外边距 */
+        }
+
+        /* 反馈文本样式 */
+        .feedback-text {
+            text-align: center;
+            font-size: 12px; /* 保持原大小，或者根据需要调整 */
+            color: #888;
+            margin-top: 10px; /* 保持一定的顶部外边距 */
+            padding: 0px 0; /* 减小内边距 */
+            border-top: 1px solid #e1e8ed;
+            line-height: 1.2em; /* 控制行高，使得文本更紧凑 */
+        }
+
+        /* 状态容器样式 */
+        .status-container {
+            display: inline-block;
+            margin-left: 10px;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+
+        .status-updating {
+            color: #2ecc71;
+            background-color: #e8f8f5;
+        }
+
+        .status-not-updating {
+            color: #e74c3c;
+            background-color: #fdedec;
+        }
+
+        /* 按钮和状态容器的容器 */
+        .button-status-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between; /* 水平方向两端对齐 */
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="button-status-container">
+            <button class="gr-button" onclick="jumpToPage(1)">获取最新消息</button>
+            <div id="status" class="status-container {% if status %}status-updating{% else %}status-not-updating{% endif %}">
+                <span id="status-text" class="status">
+                    {% if status %}
+                        当前正在更新
+                    {% else %}
+                        当前未在更新
+                    {% endif %}
+                </span>
+            </div>
+        </div>
+
+        <div class="messages">
+            {% for message in messages %}
+                <div class="message">
+                    <div class="message-info">
+                        <span class="message-author">{{ message.name }}</span>
+                        <span class="message-date-time">{{ message.date }} {{ message.time }}</span>
+                    </div>
+                    <div class="message-content">{{ message.message }}</div>
+                </div>
+            {% endfor %}
+        </div>
+        <div class="pagination">
+            <button class="gr-button" onclick="previousPage()">上一页</button>
+            <input type="text" id="pageInput" style="width: 50px; margin: 0 5px;">
+            <button class="gr-button" onclick="jumpToPage()">跳转</button>
+            <button class="gr-button" onclick="nextPage()">下一页</button>
+        </div>
+        <div class="feedback-text">
+            建议反馈，请联系QQ 48284379
+        </div>
+    </div>
+</body>
+</html>
