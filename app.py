@@ -5,7 +5,7 @@ import pytz
 
 app = Flask(__name__)
 
-mongo_uri = "mongodb+srv://walnutscracker233:fVZIfKPWvo2Lu1Vj@messagesdb.un2b7.mongodb.net/?retryWrites=true&w=majority&appName=MessagesDB"
+mongo_uri = ""
 mongo_dbname = 'your_database'  # MongoDB 数据库名称
 mongo_collection_name = 'messages'  # MongoDB 集合名称
 
